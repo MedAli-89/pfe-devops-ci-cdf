@@ -1,0 +1,25 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: docker build -t pfe-app .
+
+    - name: Run container test
+      run: docker run -d -p 8080:80 pfe-app
+
+    - name: Wait for container
+      run: sleep 10
+
+    - name: Test application
+      run: curl -f http://localhost:8080 || exit 1
